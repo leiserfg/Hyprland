@@ -181,6 +181,7 @@ class CHyprOpenGLImpl {
     bool     shouldUseNewBlurOptimizations(PHLLS pLayer, PHLWINDOW pWindow);
 
     void     clear(const CColor&);
+    void     clearReg(const CColor& color, const CRegion& reg);
     void     clearWithTex();
     void     scissor(const CBox*, bool transform = true);
     void     scissor(const pixman_box32*, bool transform = true);

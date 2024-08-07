@@ -1160,21 +1160,24 @@ void CHyprOpenGLImpl::applyScreenShader(const std::string& path) {
     m_sFinalScreenShader.posAttrib = glGetAttribLocation(m_sFinalScreenShader.program, "pos");
 }
 
-void CHyprOpenGLImpl::clear(const CColor& color) {
+void CHyprOpenGLImpl::clearReg(const CColor& color, const CRegion& reg) {
     RASSERT(m_RenderData.pMonitor, "Tried to render without begin()!");
 
     TRACY_GPU_ZONE("RenderClear");
 
     glClearColor(color.r, color.g, color.b, color.a);
 
-    if (!m_RenderData.damage.empty()) {
-        for (auto& RECT : m_RenderData.damage.getRects()) {
+    if (!reg.empty()) {
+        for (auto& RECT : reg.getRects()) {
             scissor(&RECT);
             glClear(GL_COLOR_BUFFER_BIT);
         }
     }
 
     scissor((CBox*)nullptr);
+}
+void CHyprOpenGLImpl::clear(const CColor& color) {
+    this->clearReg(color, this->m_RenderData.damage);
 }
 
 void CHyprOpenGLImpl::blend(bool enabled) {
@@ -2272,7 +2275,7 @@ void CHyprOpenGLImpl::makeRawWindowSnapshot(PHLWINDOW pWindow, CFramebuffer* pFr
 
     m_RenderData.currentFB = pFramebuffer;
 
-    clear(CColor(0, 0, 0, 0)); // JIC
+    clearReg(CColor(0, 0, 0, 1.0), fakeDamage); // JIC
 
     g_pHyprRenderer->renderWindow(pWindow, PMONITOR, &now, false, RENDER_PASS_ALL, true);
 
