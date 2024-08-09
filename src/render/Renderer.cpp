@@ -848,7 +848,7 @@ void CHyprRenderer::renderAllClientsForWorkspace(CMonitor* pMonitor, PHLWORKSPAC
             if (*PRENDERTEX /* inverted cfg flag */)
                 g_pHyprOpenGL->clear(CColor(*PBACKGROUNDCOLOR));
             else {
-                g_pHyprOpenGL->clear(CColor(CColor(0, 0, 0, 0)));
+                g_pHyprOpenGL->clear(CColor(CColor(0, 0, 0, 1)));
                 g_pHyprOpenGL->clearWithTex(); // will apply the hypr "wallpaper"
             }
         }
