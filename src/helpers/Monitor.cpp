@@ -49,6 +49,8 @@ CMonitor::CMonitor(SP<Aquamarine::IOutput> output_) : m_state(this), m_output(ou
     static auto PZOOMFACTOR = CConfigValue<Hyprlang::FLOAT>("cursor:zoom_factor");
     g_pAnimationManager->createAnimation(*PZOOMFACTOR, m_cursorZoom, g_pConfigManager->getAnimationPropertyConfig("zoomFactor"), AVARDAMAGE_NONE);
     m_cursorZoom->setUpdateCallback([this](auto) { g_pHyprRenderer->damageMonitor(m_self.lock()); });
+
+   m_disabling = false;
 }
 
 CMonitor::~CMonitor() {
@@ -284,6 +286,10 @@ void CMonitor::onConnect(bool noRule) {
 }
 
 void CMonitor::onDisconnect(bool destroy) {
+    std::lock_guard<std::mutex> lock(m_disableMutex);
+    if (m_disabling) return;
+    m_disabling = true;
+
     EMIT_HOOK_EVENT("preMonitorRemoved", m_self.lock());
     CScopeGuard x = {[this]() {
         if (g_pCompositor->m_isShuttingDown)
@@ -410,6 +416,8 @@ void CMonitor::onDisconnect(bool destroy) {
         g_pHyprRenderer->m_mostHzMonitor = pMonitorMostHz;
     }
     std::erase_if(g_pCompositor->m_monitors, [&](PHLMONITOR& el) { return el.get() == this; });
+
+    m_disabling = false;
 }
 
 void CMonitor::applyCMType(eCMType cmType) {

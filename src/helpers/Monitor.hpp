@@ -3,6 +3,7 @@
 #include "../defines.hpp"
 #include <stack>
 #include <vector>
+#include <mutex>
 #include "../SharedDefs.hpp"
 #include "MiscFunctions.hpp"
 #include "WLClasses.hpp"
@@ -274,4 +275,8 @@ class CMonitor {
     float m_minLuminance      = -1.0f;
     int   m_maxLuminance      = -1;
     int   m_maxAvgLuminance   = -1;
+
+
+    std::mutex m_disableMutex;
+    bool       m_disabling    = false;
 };
