@@ -484,6 +484,9 @@ void CMonitor::onDisconnect(bool destroy) {
             State::workspacePlacementController()->moveWorkspaceToMonitor(w, BACKUPMON);
             Animation::Workspace::startAnimation(w, Animation::Workspace::ANIMATION_TYPE_IN, true, true);
         }
+
+        g_pHyprRenderer->arrangeLayersForMonitor(BACKUPMON->m_id);
+        g_layoutManager->recalculateMonitor(BACKUPMON);
     } else {
         Desktop::focusState()->surface().reset();
         Desktop::focusState()->window().reset();
